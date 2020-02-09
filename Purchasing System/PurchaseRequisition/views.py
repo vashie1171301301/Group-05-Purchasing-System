@@ -1,4 +1,6 @@
 from django.shortcuts import render
+from django.contrib import messages
+from django.shortcuts import redirect
 
 from django.contrib.auth import authenticate, login, logout
 from PurchaseRequisition.models import PurchaseRequisition, PurchaseRequisitionItem
@@ -43,27 +45,76 @@ def purchaserequisitionform(request):
 
 def purchaserequisitionconfirmation(request):
 
+    pr_id = random.randint(10000000,99999999)
+    user_id = request.user.id
+    person = Person.objects.get(user_id = user_id)
+    
     context = {}
+
+    context2 ={
+         'title':'Purchase Requisition Form',
+            'person_id': person.person_id,
+            'purchase_requisition_id':'PR' + str(pr_id),
+        }
+    context2['user'] = request.user
+
     pr_id = request.POST['purchase_requisition_id']
     person_id= request.POST['person_id']
-
     responses = request.read()
     print(responses)
 
     q = QueryDict(responses)
+#Changed to check if the input is empty
+    if  q.getlist('item_id')[0] == '' :
+        print("Item name is empty")
+        messages.warning(request, 'please fill in the blanks.')
+        return render(request,'PurchaseRequisition/purchaserequisitionform.html',context2)
+    else:
+        items_id = q.getlist('item_id')
+        print(items_id)
+        print(q.getlist('item_id'))
 
-    items_id = q.getlist('item_id')
-    print(items_id)
-    items_name = q.getlist('item_name')
-    print(items_name)
-    description = q.getlist('description')
-    print(items_name)
-    quantity = q.getlist('quantity')
-    print(quantity)
-    unit_price = q.getlist('unit_price')
-    print(unit_price)
-    total_price = q.getlist('total_price')
-    print(total_price)
+    if  q.getlist('item_name')[0] == '' :
+        print("Item name is empty")
+        messages.warning(request, 'please fill in the blanks.')
+        return render(request,'PurchaseRequisition/purchaserequisitionform.html',context2)
+    else:
+         items_name = q.getlist('item_name')
+         print(items_name )
+         print("Item name is not empty")
+        
+    if  q.getlist('description')[0] == '' :
+        print("Item name is empty")
+        messages.warning(request, 'please fill in the blanks.')
+        return render(request,'PurchaseRequisition/purchaserequisitionform.html',context2)
+    else:
+        description = q.getlist('description')
+
+    if  q.getlist('quantity')[0] == '' :
+        print("Item name is empty")
+        messages.warning(request, 'please fill in the blanks.')
+        return render(request,'PurchaseRequisition/purchaserequisitionform.html',context2)
+    else:
+        if(q.getlist('quantity')[0].isdigit()):
+            quantity = q.getlist('quantity')
+            print(quantity)
+        else:
+            messages.warning(request, 'please fill in a number')
+            return render(request,'PurchaseRequisition/purchaserequisitionform.html',context2)
+    
+    if  q.getlist('unit_price')[0] == '' :
+        print("Item name is empty")
+        messages.warning(request, 'please fill in the blanks.')
+        return render(request,'PurchaseRequisition/purchaserequisitionform.html',context2)
+    else:
+        if(q.getlist('unit_price')[0].isdigit()):
+            unit_price = q.getlist('unit_price')
+            print(unit_price)
+            total_price = q.getlist('total_price')
+            print(total_price)
+        else:
+            messages.warning(request, 'please fill in a number')
+            return render(request,'PurchaseRequisition/purchaserequisitionform.html',context2)
 
     items = list()
 
@@ -72,7 +123,11 @@ def purchaserequisitionconfirmation(request):
     grand_total = Decimal(0)
 
     while i < items_length:
+     
         total= Decimal(quantity[i]) * Decimal(unit_price[i])
+     
+       
+
         item_table = {
             'item_name': items_name[i],
             'item_id': items_id[i],
@@ -98,7 +153,6 @@ def purchaserequisitionconfirmation(request):
     return render(request,'PurchaseRequisition/purchaserequisitionconfirmation.html',context)
 
  
-
    
 def purchaserequisitiondetails(request):
     context = {}
@@ -119,7 +173,7 @@ def purchaserequisitiondetails(request):
     items_name = q.getlist('item_name')
     print(items_name)
     description = q.getlist('description')
-    print(items_name)
+    print(description)
     quantity = q.getlist('quantity')
     print(quantity)
     unit_price = q.getlist('unit_price')
