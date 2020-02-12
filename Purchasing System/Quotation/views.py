@@ -24,7 +24,7 @@ from django.utils.datastructures import MultiValueDictKeyError
 from PurchaseOrder.models import PurchaseOrder,PurchaseOrderItem
 
 @login_required
-def quotationform(request):
+def quotationhistory(request):
     context = {
             'title':'Quotation Form',
             'year':'2019/2020'
@@ -72,8 +72,8 @@ def quotationconfirmation(request):
 
     vendor_id = request.POST['vendor_id']
     description = request.POST['description']
-    vendor_info = Vendor.objects.get(vendor_id = vendor_id)
-    
+
+
     responses = request.read()
     print(responses)
    
@@ -104,22 +104,35 @@ def quotationconfirmation(request):
         items.append(item_table)
         i = i + 1
     print(items)
+
+    try:
+        vendor_info = Vendor.objects.get(vendor_id = vendor_id)
+    
+    
        
 
-    context = {
-            'title': 'Quotation Confirmation',
-            'request_for_quotation_id' : request_for_quotation_id,
-            'quotation_id' : quo_id,
-            'staff_id' : staff.person_id,
-            'vendor_id' : vendor_id,
-            'grand_total': grand_total,
-            'rows' : items,
-            'staff_info' : staff,
-            'vendor_info' : vendor_info,
-            'description' : description
-        }
+        context = {
+                'title': 'Quotation Confirmation',
+                'request_for_quotation_id' : request_for_quotation_id,
+                'quotation_id' : quo_id,
+                'staff_id' : staff.person_id,
+           
+                'vendor_id' : vendor_id,
+                'grand_total': grand_total,
+                'rows' : items,
+                'staff_info' : staff,
+                'vendor_info' : vendor_info,
+                'description' : description
+            }
     
-    return render(request,'Quotation/quotationconfirmation.html',context)
+        return render(request,'Quotation/quotationconfirmation.html',context)
+
+    except Vendor.DoesNotExist:
+        context = { 'error': 'Please insert valid vendor ID!',
+                    'title': 'Request Of Quotation Form',
+             
+            }
+        return render(request,'Quotation/quotationform.html',context)
 
  
 def quotationdetails(request):
@@ -132,7 +145,6 @@ def quotationdetails(request):
     request_for_quotation = RequestForQuotation.objects.get(request_for_quotation_id = request_for_quotation_id)
     staff_info = Person.objects.get(person_id = staff_id)
     vendor_info = Vendor.objects.get(vendor_id = vendor_id)
-
     responses = request.read()
     print(responses)
    
@@ -177,7 +189,8 @@ def quotationdetails(request):
                             person_id = staff_info,
                             description = description,
                             vendor_id = vendor_info, 
-                            request_for_quotation_id = request_for_quotation)
+                            request_for_quotation_id = request_for_quotation
+                            )
     quo_info.save()
 
     quotation = Quotation.objects.get(quotation_id = quo_id)
@@ -238,8 +251,8 @@ def quotationhistorydetails(request):
         return render(request,'Quotation/quotationhistorydetails.html',context)
    except MultiValueDictKeyError:                   # Try exception MultiValueDictKeyError
        return render(request,'PurchaseOrder/purchaseorderform.html')
-
-def quotationhistory(request):
+   
+def quotationform(request):
 
     quotations = Quotation.objects.all()
 
