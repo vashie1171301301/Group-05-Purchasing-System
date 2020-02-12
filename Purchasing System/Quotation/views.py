@@ -262,6 +262,4 @@ def quotationform(request):
             'year':'2019/2020'
         }
 
-
-
     return render(request,'Quotation/quotationhistory.html',context)

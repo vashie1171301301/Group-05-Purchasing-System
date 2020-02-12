@@ -42,9 +42,7 @@ def fillingdeliveryorder(request):
     try:
         staff = Person.objects.get(user_id = user_id)
     except Person.DoesNotExist:
-        context = { 'error': 'The Purchase Order id is invalid !',
-                    'title': 'Delivery Order Form'
-            }
+        staff=None
         return render(request,'DeliveryOrder/deliveryorderform.html',context)
 
     try: 
@@ -70,30 +68,26 @@ def fillingdeliveryorder(request):
 
 def deliveryorderconfirmation(request):
 
-
-
     context = {}
     do_id = request.POST['delivery_order_id']
     po_id = request.POST['purchase_order_id']
 
     user_id = request.user.id
-    
     try:
-         staff = Person.objects.get(user_id=user_id)
+        staff = Person.objects.get(user_id = user_id)
     except Person.DoesNotExist:
-        context = { 'error': 'The quotation Order id is invalid !',
-                    'title': 'Delivery Order Form'
-            }
-
+        staff=None
         return render(request,'DeliveryOrder/deliveryorderform.html',context)
-   
     
     vendor_id = request.POST['vendor_id']
     shipping_inst = request.POST['shipping_inst']
     description = request.POST['description']
-
+    try:
+        vendor_info = Vendor.objects.get(vendor_id = vendor_id)
+    except Vendor.DoesNotExist:
+        vendor_info=None
+        return render(request,'DeliveryOrder/deliveryorderform.html',context)
     
-    vendor_info = Vendor.objects.get(vendor_id = vendor_id)
     responses = request.read()
     print(responses)
    
