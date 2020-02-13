@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.contrib import messages
 
 from django.contrib.auth import authenticate, login, logout
 from django.urls import reverse
@@ -25,6 +26,7 @@ from django.db import IntegrityError
 
 from django.http import Http404
 from django.http import HttpResponse
+from django.utils.datastructures import MultiValueDictKeyError
 
 
 @login_required
@@ -44,7 +46,7 @@ def fillingrequestforquotation(request):
     context = {}
     pr_id = request.GET['pr_id']
     rfq_id = random.randint(1000000,9999999)
-    staff_id = request.user.id
+    staff_id = request.user.id 
     staff_info = Person.objects.get(user_id = staff_id)
 
     try: 
@@ -86,8 +88,29 @@ def requestforquotationconfirmation(request):
     print(items_id)
     items_name = q.getlist('item_name')
     print(items_name)
-    items_quantity = q.getlist('quantity')
-    print(items_quantity)
+    description = q.getlist('description')
+    print(description)
+    try:
+        if(q.getlist('quantity')[0].isdigit()):
+            items_quantity = q.getlist('quantity')
+            print(items_quantity)
+        else:
+            messages.warning(request, 'please fill in a number')
+            return render(request,'RequestForQuotation/requestforquotationform.html',context)
+    except q.getlist('quantity')[0].DoesNotExist:
+        context = { 'error': 'Please insert valid vendor ID!',
+                    'title': 'Request Of Quotation Form',
+                    'purchase_requisition_id' : purchase_requisition_id,
+                    'request_for_quotation_id' : rfq_id,
+                    'staff_id' : staff_id,
+                    'grand_total': grand_total,
+                    'rows' : items,
+                    'staff_info' : staff_info,
+                    'description' : description
+            }
+        return render(request,'RequestForQuotation/requestforquotationform.html',context)
+
+
     items_unit_price = q.getlist('unit_price')
     print(items_unit_price)
     items_total_price = q.getlist('total_price')
@@ -105,6 +128,7 @@ def requestforquotationconfirmation(request):
         item_table = {
             'item_name': items_name[i],
             'item_id': items_id[i],
+            'item_description':description[i],
             'quantity' : items_quantity[i],
             'unit_price': items_unit_price[i],
             'total_price': total
@@ -128,7 +152,6 @@ def requestforquotationconfirmation(request):
                 'rows' : items,
                 'staff_info' : staff_info,
                 'vendor_info' : vendor_info,
-                'description' : description
             }
 
 
