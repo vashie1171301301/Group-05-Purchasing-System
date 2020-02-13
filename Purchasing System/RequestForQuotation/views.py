@@ -278,7 +278,7 @@ def requestforquotationhistorydetails(request):
 
     print(request.body)
     try:
-        pk = request.GET['rof_id']
+        pk = request.GET['rfq_id']
         request_for_quotation = RequestForQuotation.objects.get(request_for_quotation_id = pk)
     
         items = RequestForQuotationItem.objects.filter(request_for_quotation_id = pk)
