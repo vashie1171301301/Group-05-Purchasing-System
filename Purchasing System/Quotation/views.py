@@ -103,9 +103,10 @@ def quotationconfirmation(request):
         }
         items.append(item_table)
         i = i + 1
+        grand_total = grand_total + total
     print(items)
     
-    grand_total = grand_total + total
+    
 
     try:
         vendor_info = Vendor.objects.get(vendor_id = vendor_id)
@@ -178,9 +179,10 @@ def quotationdetails(request):
         }
         items.append(item_table)
         i = i + 1
+        grand_total = grand_total + total
     print(items)
 
-    grand_total = grand_total + total
+    
 
     # push the data to the database 
     current_time = datetime.datetime.now() 
