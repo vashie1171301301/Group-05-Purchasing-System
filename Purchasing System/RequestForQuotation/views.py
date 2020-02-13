@@ -228,6 +228,8 @@ def requestforquotationdetails(request):
     #send email to vendor
         x = PrettyTable()
 
+
+
         x.field_names = ["Item ID","Item Name","Quantity","Unit Price","Total Price"]
 
         for item in items:
@@ -276,7 +278,7 @@ def requestforquotationhistorydetails(request):
 
     print(request.body)
     try:
-        pk = request.GET['rfq_id']
+        pk = request.GET['rof_id']
         request_for_quotation = RequestForQuotation.objects.get(request_for_quotation_id = pk)
     
         items = RequestForQuotationItem.objects.filter(request_for_quotation_id = pk)
