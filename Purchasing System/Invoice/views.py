@@ -46,7 +46,7 @@ def fillinginvoice(request):
         context = {
                 'title': 'Invoice Form',
                 'invoice_id': 'INV' + str(inv_id),
-                'purchase_order_id': inv_id, 
+                'purchase_order_id': pur_id, 
                 'staff_id' : purchase_orders.person_id.person_id,
                 'vendor_id': purchase_orders.vendor_id.vendor_id,
                 'rows':item_list
@@ -55,9 +55,9 @@ def fillinginvoice(request):
         responsesItems = render(request,'Invoice/invoiceform.html',context).content
         return render(request,'Invoice/invoiceform.html',context)
 
-    except Invoice.DoesNotExist:
+    except PurchaseOrder.DoesNotExist:
 
-        context = { 'error': 'The invoice id is invalid !',
+        context = { 'error': 'The purchase order id is invalid !',
                     'title': 'Invoice Form'
             }
         return render(request,'Invoice/invoiceform.html',context)
