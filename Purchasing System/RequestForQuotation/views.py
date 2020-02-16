@@ -228,6 +228,8 @@ def requestforquotationdetails(request):
     #send email to vendor
         x = PrettyTable()
 
+
+
         x.field_names = ["Item ID","Item Name","Quantity","Unit Price","Total Price"]
 
         for item in items:
